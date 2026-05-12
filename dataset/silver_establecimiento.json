@@ -1,0 +1,43 @@
+{
+	"name": "silver_establecimiento",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "dw_salud",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "bronze/silver"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "id_establecimiento",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "nombre_establecimiento",
+				"type": "varchar"
+			},
+			{
+				"name": "id_departamento",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "nivel_atencion",
+				"type": "varchar"
+			},
+			{
+				"name": "tipo_establecimiento",
+				"type": "varchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "silver",
+			"table": "establecimiento"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

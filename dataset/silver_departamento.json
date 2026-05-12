@@ -1,0 +1,34 @@
+{
+	"name": "silver_departamento",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "dw_salud",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "bronze/silver"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "id_departamento",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "nombre_departamento",
+				"type": "varchar"
+			},
+			{
+				"name": "region",
+				"type": "varchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "silver",
+			"table": "departamento"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

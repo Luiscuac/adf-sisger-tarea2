@@ -1,0 +1,43 @@
+{
+	"name": "silver_vacuna",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "dw_salud",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "bronze/silver"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "id_vacuna",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "nombre_vacuna",
+				"type": "varchar"
+			},
+			{
+				"name": "enfermedad_previene",
+				"type": "varchar"
+			},
+			{
+				"name": "dosis_requeridas",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "tipo_vacuna",
+				"type": "varchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "silver",
+			"table": "vacuna"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}
