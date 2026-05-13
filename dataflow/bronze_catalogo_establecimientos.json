@@ -22,6 +22,9 @@
 				},
 				{
 					"name": "LimpiarCamposTexto"
+				},
+				{
+					"name": "CastearTiposTecnicos"
 				}
 			],
 			"scriptLines": [
@@ -48,7 +51,12 @@
 				"          {tipo_establecimiento } = upper(trim(tipo_establecimiento)),",
 				"          red_salud = iif(isNull(red_salud) || trim(red_salud) == '', 'SIN RED ASIGNADA', upper(trim(red_salud))),",
 				"          municipio = trim(municipio),",
-				"          zona = upper(trim(zona))) ~> LimpiarCamposTexto"
+				"          zona = upper(trim(zona))) ~> LimpiarCamposTexto",
+				"LimpiarCamposTexto derive(nivel_atencion = toInteger(nivel_atencion),",
+				"          latitud = toDecimal(latitud, 10, 6),",
+				"          longitud = toDecimal(longitud, 10, 6),",
+				"          tiene_cadena_frio = toBoolean(tiene_cadena_frio),",
+				"          activo = toBoolean(activo)) ~> CastearTiposTecnicos"
 			]
 		}
 	}
