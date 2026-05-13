@@ -66,6 +66,9 @@
 				},
 				{
 					"name": "estadarizacionlapaz"
+				},
+				{
+					"name": "UnirTodasLasVacunaciones"
 				}
 			],
 			"scriptLines": [
@@ -224,7 +227,8 @@
 				"booleanosRural derive(fecha_nacimiento = toDate(fecha_nacimiento, 'dd/MM/yyyy'),",
 				"          fecha_vacunacion = toDate(left(fecha_vacunacion, 10), 'yyyy-MM-dd')) ~> fechasRural",
 				"fechasRural filter(!isNull(vacuna_id)) ~> nulosvacuna",
-				"fechasLapaz derive(sexo = left(sexo, 1)) ~> estadarizacionlapaz"
+				"fechasLapaz derive(sexo = left(sexo, 1)) ~> estadarizacionlapaz",
+				"fechasdtcr, estadarizacionlapaz, nulosvacuna union(byName: true)~> UnirTodasLasVacunaciones"
 			]
 		}
 	}
