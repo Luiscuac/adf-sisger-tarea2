@@ -53,8 +53,8 @@
 				"          municipio = trim(municipio),",
 				"          zona = upper(trim(zona))) ~> LimpiarCamposTexto",
 				"LimpiarCamposTexto derive(nivel_atencion = toInteger(nivel_atencion),",
-				"          latitud = toDecimal(latitud, 10, 6),",
-				"          longitud = toDecimal(longitud, 10, 6),",
+				"          latitud = toDecimal(     iif(locate('.', replace(trim(latitud), ',', '.')) > 0,          left(replace(trim(latitud), ',', '.'), locate('.', replace(trim(latitud), ',', '.'))) + replace(substring(replace(trim(latitud), ',', '.'), locate('.', replace(trim(latitud), ',', '.')) + 1, length(latitud)), '.', ''),          replace(trim(latitud), ',', '.')     ),      10, 6 ),",
+				"          longitud = toDecimal(     iif(locate('.', replace(trim(longitud), ',', '.')) > 0,          left(replace(trim(longitud), ',', '.'), locate('.', replace(trim(longitud), ',', '.'))) + replace(substring(replace(trim(longitud), ',', '.'), locate('.', replace(trim(longitud), ',', '.')) + 1, length(longitud)), '.', ''),          replace(trim(longitud), ',', '.')     ),      10, 6 ),",
 				"          tiene_cadena_frio = toBoolean(tiene_cadena_frio),",
 				"          activo = toBoolean(activo)) ~> CastearTiposTecnicos"
 			]
