@@ -1,117 +1,112 @@
 {
-	"name": "vacunacion_santa_cruz_csv",
+	"name": "silver_vacunaciones_consolidadas",
 	"properties": {
 		"linkedServiceName": {
-			"referenceName": "datalake_salud_pai",
+			"referenceName": "dw_salud",
 			"type": "LinkedServiceReference"
 		},
 		"folder": {
-			"name": "bronze"
+			"name": "silver"
 		},
 		"annotations": [],
-		"type": "DelimitedText",
-		"typeProperties": {
-			"location": {
-				"type": "AzureBlobStorageLocation",
-				"fileName": "vacunacion_santa_cruz.csv",
-				"container": "bronze"
-			},
-			"columnDelimiter": ";",
-			"encodingName": "WINDOWS-1252",
-			"escapeChar": "\\",
-			"firstRowAsHeader": true,
-			"quoteChar": "\""
-		},
+		"type": "AzureSqlTable",
 		"schema": [
 			{
 				"name": "registro_id",
-				"type": "String"
+				"type": "varchar"
 			},
 			{
 				"name": "paciente_id",
-				"type": "String"
+				"type": "varchar"
 			},
 			{
 				"name": "ci_paciente",
-				"type": "String"
+				"type": "varchar"
 			},
 			{
 				"name": "nombre_paciente",
-				"type": "String"
+				"type": "varchar"
 			},
 			{
 				"name": "apellido_paterno",
-				"type": "String"
+				"type": "varchar"
 			},
 			{
 				"name": "apellido_materno",
-				"type": "String"
+				"type": "varchar"
 			},
 			{
 				"name": "sexo",
-				"type": "String"
+				"type": "varchar"
 			},
 			{
 				"name": "fecha_nacimiento",
-				"type": "String"
+				"type": "varchar"
 			},
 			{
 				"name": "municipio_residencia",
-				"type": "String"
+				"type": "varchar"
 			},
 			{
 				"name": "comunidad_indigena",
-				"type": "String"
+				"type": "bit"
 			},
 			{
 				"name": "fecha_vacunacion",
-				"type": "String"
+				"type": "varchar"
 			},
 			{
 				"name": "vacuna_id",
-				"type": "String"
+				"type": "varchar"
 			},
 			{
 				"name": "vacuna_nombre",
-				"type": "String"
+				"type": "varchar"
 			},
 			{
 				"name": "numero_dosis",
-				"type": "String"
+				"type": "int",
+				"precision": 10
 			},
 			{
 				"name": "establecimiento_id",
-				"type": "String"
+				"type": "varchar"
 			},
 			{
 				"name": "nombre_establecimiento",
-				"type": "String"
+				"type": "varchar"
 			},
 			{
 				"name": "departamento",
-				"type": "String"
+				"type": "varchar"
 			},
 			{
 				"name": "lote_vacuna",
-				"type": "String"
+				"type": "varchar"
 			},
 			{
 				"name": "temperatura_conservacion",
-				"type": "String"
+				"type": "decimal",
+				"precision": 10,
+				"scale": 2
 			},
 			{
 				"name": "edad_dias_aplicacion",
-				"type": "String"
+				"type": "int",
+				"precision": 10
 			},
 			{
 				"name": "aplicacion_oportuna",
-				"type": "String"
+				"type": "bit"
 			},
 			{
 				"name": "via_administracion",
-				"type": "String"
+				"type": "varchar"
 			}
-		]
-	},
-	"type": "Microsoft.DataFactory/factories/datasets"
+		],
+		"typeProperties": {
+			"schema": "silver",
+			"table": "vacunaciones_consolidadas"
+		}
+	}
 }
