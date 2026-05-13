@@ -15,7 +15,15 @@
 					"name": "source1"
 				}
 			],
-			"sinks": [],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "silver_catalogo_departamentos",
+						"type": "DatasetReference"
+					},
+					"name": "CargarSilverCatologoDepartamentos"
+				}
+			],
 			"transformations": [
 				{
 					"name": "FiltrarIDsValidos"
@@ -46,7 +54,26 @@
 				"          departamento = upper(trim(departamento)),",
 				"          zona_geografica = upper(trim(zona_geografica))) ~> EstandarizarTextos",
 				"EstandarizarTextos derive(es_capital_departamental = toBoolean(es_capital_departamental),",
-				"          poblacion_depto_estimada = toInteger(poblacion_depto_estimada)) ~> ConvertirTiposDato"
+				"          poblacion_depto_estimada = toInteger(poblacion_depto_estimada)) ~> ConvertirTiposDato",
+				"ConvertirTiposDato sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          municipio_id as string,",
+				"          municipio_nombre as string,",
+				"          departamento as string,",
+				"          codigo_departamento as string,",
+				"          zona_geografica as string,",
+				"          es_capital_departamental as boolean,",
+				"          poblacion_depto_estimada as integer",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> CargarSilverCatologoDepartamentos"
 			]
 		}
 	}

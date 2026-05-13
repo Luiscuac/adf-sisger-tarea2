@@ -15,7 +15,15 @@
 					"name": "source1"
 				}
 			],
-			"sinks": [],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "silver_catalogo_vacunas",
+						"type": "DatasetReference"
+					},
+					"name": "CargarSilverVacunas"
+				}
+			],
 			"transformations": [
 				{
 					"name": "FiltrarVacunasValidas"
@@ -56,7 +64,33 @@
 				"          edad_minima_dias = toInteger(edad_minima_dias),",
 				"          edad_maxima_dias = toInteger(edad_maxima_dias),",
 				"          intervalo_minimo_dias = iif(isNull(intervalo_minimo_dias) || trim(intervalo_minimo_dias) == '', 0, toInteger(intervalo_minimo_dias)),",
-				"          dosis_ml = toDecimal(dosis_ml, 10, 2)) ~> CastearNumerosYDecimales"
+				"          dosis_ml = toDecimal(dosis_ml, 10, 2)) ~> CastearNumerosYDecimales",
+				"CastearNumerosYDecimales sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          vacuna_id as string,",
+				"          vacuna_nombre as string,",
+				"          enfermedad_previene as string,",
+				"          grupo_pai as string,",
+				"          numero_dosis as integer,",
+				"          dosis_descripcion as string,",
+				"          edad_aplicacion_descripcion as string,",
+				"          edad_minima_dias as integer,",
+				"          edad_maxima_dias as integer,",
+				"          intervalo_minimo_dias as integer,",
+				"          via_administracion as string,",
+				"          sitio_aplicacion as string,",
+				"          dosis_ml as decimal(10,2),",
+				"          condicion_especial as string",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> CargarSilverVacunas"
 			]
 		}
 	}
