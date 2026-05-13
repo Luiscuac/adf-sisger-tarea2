@@ -22,6 +22,9 @@
 				},
 				{
 					"name": "EstandarizarTextos"
+				},
+				{
+					"name": "CastearNumerosYDecimales"
 				}
 			],
 			"scriptLines": [
@@ -48,7 +51,12 @@
 				"FiltrarVacunasValidas derive(vacuna_id = trim(vacuna_id),",
 				"          vacuna_nombre = trim(vacuna_nombre),",
 				"          via_administracion = upper(trim(via_administracion)),",
-				"          condicion_especial = iif(isNull(condicion_especial) || trim(condicion_especial) == '', 'NINGUNA', upper(trim(condicion_especial)))) ~> EstandarizarTextos"
+				"          condicion_especial = iif(isNull(condicion_especial) || trim(condicion_especial) == '', 'NINGUNA', upper(trim(condicion_especial)))) ~> EstandarizarTextos",
+				"EstandarizarTextos derive(numero_dosis = toInteger(numero_dosis),",
+				"          edad_minima_dias = toInteger(edad_minima_dias),",
+				"          edad_maxima_dias = toInteger(edad_maxima_dias),",
+				"          intervalo_minimo_dias = iif(isNull(intervalo_minimo_dias) || trim(intervalo_minimo_dias) == '', toInteger(null()), toInteger(intervalo_minimo_dias)),",
+				"          dosis_ml = toDecimal(dosis_ml, 10, 2)) ~> CastearNumerosYDecimales"
 			]
 		}
 	}
