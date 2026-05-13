@@ -41,7 +41,7 @@
 			},
 			{
 				"name": "fecha_nacimiento",
-				"type": "varchar"
+				"type": "date"
 			},
 			{
 				"name": "municipio_residencia",
@@ -53,7 +53,7 @@
 			},
 			{
 				"name": "fecha_vacunacion",
-				"type": "varchar"
+				"type": "date"
 			},
 			{
 				"name": "vacuna_id",

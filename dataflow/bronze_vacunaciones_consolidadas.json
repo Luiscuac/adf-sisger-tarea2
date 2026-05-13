@@ -29,7 +29,15 @@
 					"name": "source3"
 				}
 			],
-			"sinks": [],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "silver_vacunaciones_consolidadas",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
 			"transformations": [
 				{
 					"name": "trim"
@@ -159,7 +167,10 @@
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false) ~> source3",
 				"source1 derive(municipio_residencia = trim(municipio_residencia),",
-				"          departamento = trim(departamento)) ~> trim",
+				"          departamento = trim(departamento),",
+				"          edad_dias_aplicacion = toInteger(edad_dias_aplicacion),",
+				"          numero_dosis = toInteger(numero_dosis),",
+				"          temperatura_conservacion = toDecimal(temperatura_conservacion, 10, 2)) ~> trim",
 				"trim derive(departamento = iif(like(upper(departamento), '%CRUZ%'), 'Santa Cruz', departamento),",
 				"          aplicacion_oportuna = toBoolean(aplicacion_oportuna),",
 				"          comunidad_indigena = toBoolean(comunidad_indigena)) ~> toBooleanstcr",
@@ -225,10 +236,50 @@
 				"mapeoColumnaslapaz derive(fecha_nacimiento = toDate(fecha_nacimiento, 'dd/MM/yyyy'),",
 				"          fecha_vacunacion = toDate(fecha_vacunacion, 'dd/MM/yyyy')) ~> fechasLapaz",
 				"booleanosRural derive(fecha_nacimiento = toDate(fecha_nacimiento, 'dd/MM/yyyy'),",
-				"          fecha_vacunacion = toDate(left(fecha_vacunacion, 10), 'yyyy-MM-dd')) ~> fechasRural",
+				"          fecha_vacunacion = toDate(left(fecha_vacunacion, 10), 'yyyy-MM-dd'),",
+				"          numero_dosis = toInteger(numero_dosis),",
+				"          edad_dias_aplicacion = toInteger(edad_dias_aplicacion),",
+				"          temperatura_conservacion = toDecimal(temperatura_conservacion, 10, 2)) ~> fechasRural",
 				"fechasRural filter(!isNull(vacuna_id)) ~> nulosvacuna",
-				"fechasLapaz derive(sexo = left(sexo, 1)) ~> estadarizacionlapaz",
-				"fechasdtcr, estadarizacionlapaz, nulosvacuna union(byName: true)~> UnirTodasLasVacunaciones"
+				"fechasLapaz derive(sexo = left(sexo, 1),",
+				"          numero_dosis = toInteger(numero_dosis),",
+				"          temperatura_conservacion = toDecimal(temperatura_conservacion, 10, 2),",
+				"          edad_dias_aplicacion = toInteger(edad_dias_aplicacion)) ~> estadarizacionlapaz",
+				"fechasdtcr, estadarizacionlapaz, nulosvacuna union(byName: true)~> UnirTodasLasVacunaciones",
+				"UnirTodasLasVacunaciones sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          registro_id as string,",
+				"          paciente_id as string,",
+				"          ci_paciente as string,",
+				"          nombre_paciente as string,",
+				"          apellido_paterno as string,",
+				"          apellido_materno as string,",
+				"          sexo as string,",
+				"          fecha_nacimiento as date,",
+				"          municipio_residencia as string,",
+				"          comunidad_indigena as boolean,",
+				"          fecha_vacunacion as date,",
+				"          vacuna_id as string,",
+				"          vacuna_nombre as string,",
+				"          numero_dosis as integer,",
+				"          establecimiento_id as string,",
+				"          nombre_establecimiento as string,",
+				"          departamento as string,",
+				"          lote_vacuna as string,",
+				"          temperatura_conservacion as decimal(10,2),",
+				"          edad_dias_aplicacion as integer,",
+				"          aplicacion_oportuna as boolean,",
+				"          via_administracion as string",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> sink1"
 			]
 		}
 	}
