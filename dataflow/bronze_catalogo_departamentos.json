@@ -20,6 +20,13 @@
 						"type": "DatasetReference"
 					},
 					"name": "source2"
+				},
+				{
+					"dataset": {
+						"referenceName": "vacunacion_rural_movil_csv",
+						"type": "DatasetReference"
+					},
+					"name": "source3"
 				}
 			],
 			"sinks": [],
@@ -29,6 +36,12 @@
 				},
 				{
 					"name": "derivedColumn2"
+				},
+				{
+					"name": "derivedColumn3"
+				},
+				{
+					"name": "select1"
 				}
 			],
 			"scriptLines": [
@@ -85,9 +98,68 @@
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false) ~> source2",
+				"source(output(",
+				"          record_id as string,",
+				"          sync_timestamp as string,",
+				"          device_id as string,",
+				"          patient_id as string,",
+				"          patient_ci as string,",
+				"          patient_name as string,",
+				"          patient_last_name_1 as string,",
+				"          patient_last_name_2 as string,",
+				"          patient_sex as string,",
+				"          patient_birth_date as string,",
+				"          patient_department as string,",
+				"          patient_municipality as string,",
+				"          patient_community as string,",
+				"          patient_indigenous as string,",
+				"          vaccination_date as string,",
+				"          vaccine_code as string,",
+				"          vaccine_name as string,",
+				"          dose_number as string,",
+				"          facility_code as string,",
+				"          facility_name as string,",
+				"          lot_number as string,",
+				"          storage_temp_celsius as string,",
+				"          patient_age_days as string,",
+				"          administration_route as string,",
+				"          gps_latitude as string,",
+				"          gps_longitude as string,",
+				"          gps_accuracy_meters as string,",
+				"          observations as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> source3",
 				"source1 derive(municipio_residencia = trim(municipio_residencia),",
 				"          departamento = trim(departamento)) ~> derivedColumn1",
-				"derivedColumn1 derive(departamento = iif(like(upper(departamento), '%CRUZ%'), 'Santa Cruz', departamento)) ~> derivedColumn2"
+				"derivedColumn1 derive(departamento = iif(like(upper(departamento), '%CRUZ%'), 'Santa Cruz', departamento)) ~> derivedColumn2",
+				"source2 derive(depto = trim(depto)) ~> derivedColumn3",
+				"derivedColumn3 select(mapColumn(",
+				"          registro_id = id_registro,",
+				"          paciente_id = cod_paciente,",
+				"          ci_paciente = documento_identidad,",
+				"          nombre_paciente = nombres,",
+				"          apellido_paterno = primer_apellido,",
+				"          segundo_apellido,",
+				"          sexo = genero,",
+				"          fec_nacimiento,",
+				"          municipio,",
+				"          pueblo_indigena,",
+				"          fecha_vacunacion = fec_vacunacion,",
+				"          cod_vacuna,",
+				"          desc_vacuna,",
+				"          nro_dosis,",
+				"          cod_establecimiento,",
+				"          desc_establecimiento,",
+				"          departamento = depto,",
+				"          nro_lote,",
+				"          temp_conservacion,",
+				"          edad_dias,",
+				"          via_aplicacion",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1"
 			]
 		}
 	}
