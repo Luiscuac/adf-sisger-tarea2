@@ -19,6 +19,9 @@
 			"transformations": [
 				{
 					"name": "FiltrarVacunasValidas"
+				},
+				{
+					"name": "EstandarizarTextos"
 				}
 			],
 			"scriptLines": [
@@ -41,7 +44,11 @@
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false) ~> source1",
-				"source1 filter(!isNull(vacuna_id) && trim(vacuna_id) != '') ~> FiltrarVacunasValidas"
+				"source1 filter(!isNull(vacuna_id) && trim(vacuna_id) != '') ~> FiltrarVacunasValidas",
+				"FiltrarVacunasValidas derive(vacuna_id = trim(vacuna_id),",
+				"          vacuna_nombre = trim(vacuna_nombre),",
+				"          via_administracion = upper(trim(via_administracion)),",
+				"          condicion_especial = iif(isNull(condicion_especial) || trim(condicion_especial) == '', 'NINGUNA', upper(trim(condicion_especial)))) ~> EstandarizarTextos"
 			]
 		}
 	}
