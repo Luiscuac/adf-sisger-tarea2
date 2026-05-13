@@ -60,6 +60,9 @@
 				},
 				{
 					"name": "derivedColumn8"
+				},
+				{
+					"name": "filter1"
 				}
 			],
 			"scriptLines": [
@@ -216,7 +219,8 @@
 				"select1 derive(fecha_nacimiento = toDate(fecha_nacimiento, 'dd/MM/yyyy'),",
 				"          fecha_vacunacion = toDate(fecha_vacunacion, 'dd/MM/yyyy')) ~> derivedColumn7",
 				"derivedColumn5 derive(fecha_nacimiento = toDate(fecha_nacimiento, 'dd/MM/yyyy'),",
-				"          fecha_vacunacion = toDate(left(fecha_vacunacion, 10), 'yyyy-MM-dd')) ~> derivedColumn8"
+				"          fecha_vacunacion = toDate(left(fecha_vacunacion, 10), 'yyyy-MM-dd')) ~> derivedColumn8",
+				"derivedColumn8 filter(!isNull(vacuna_id)) ~> filter1"
 			]
 		}
 	}
