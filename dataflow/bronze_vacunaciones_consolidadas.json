@@ -32,37 +32,40 @@
 			"sinks": [],
 			"transformations": [
 				{
-					"name": "derivedColumn1"
+					"name": "trim"
 				},
 				{
-					"name": "derivedColumn2"
+					"name": "toBooleanstcr"
 				},
 				{
-					"name": "derivedColumn3"
+					"name": "columunmaAplicacion"
 				},
 				{
-					"name": "derivedColumn4"
+					"name": "booleanos"
 				},
 				{
-					"name": "select1"
+					"name": "mapeoColumnaslapaz"
 				},
 				{
-					"name": "select2"
+					"name": "mapeoColumnasRural"
 				},
 				{
-					"name": "derivedColumn5"
+					"name": "booleanosRural"
 				},
 				{
-					"name": "derivedColumn6"
+					"name": "fechasdtcr"
 				},
 				{
-					"name": "derivedColumn7"
+					"name": "fechasLapaz"
 				},
 				{
-					"name": "derivedColumn8"
+					"name": "fechasRural"
 				},
 				{
-					"name": "filter1"
+					"name": "nulosvacuna"
+				},
+				{
+					"name": "estadarizacionlapaz"
 				}
 			],
 			"scriptLines": [
@@ -153,14 +156,14 @@
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false) ~> source3",
 				"source1 derive(municipio_residencia = trim(municipio_residencia),",
-				"          departamento = trim(departamento)) ~> derivedColumn1",
-				"derivedColumn1 derive(departamento = iif(like(upper(departamento), '%CRUZ%'), 'Santa Cruz', departamento),",
+				"          departamento = trim(departamento)) ~> trim",
+				"trim derive(departamento = iif(like(upper(departamento), '%CRUZ%'), 'Santa Cruz', departamento),",
 				"          aplicacion_oportuna = toBoolean(aplicacion_oportuna),",
-				"          comunidad_indigena = toBoolean(comunidad_indigena)) ~> derivedColumn2",
+				"          comunidad_indigena = toBoolean(comunidad_indigena)) ~> toBooleanstcr",
 				"source2 derive(depto = trim(depto),",
-				"          aplicacion_oportuna = true()) ~> derivedColumn3",
-				"derivedColumn3 derive(pueblo_indigena = iif(lower(trim(pueblo_indigena)) == 'no', false(), true())) ~> derivedColumn4",
-				"derivedColumn4 select(mapColumn(",
+				"          aplicacion_oportuna = true()) ~> columunmaAplicacion",
+				"columunmaAplicacion derive(pueblo_indigena = iif(lower(trim(pueblo_indigena)) == 'no', false(), true())) ~> booleanos",
+				"booleanos select(mapColumn(",
 				"          registro_id = id_registro,",
 				"          paciente_id = cod_paciente,",
 				"          ci_paciente = documento_identidad,",
@@ -185,7 +188,7 @@
 				"          aplicacion_oportuna",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> select1",
+				"     skipDuplicateMapOutputs: true) ~> mapeoColumnaslapaz",
 				"source3 select(mapColumn(",
 				"          registro_id = record_id,",
 				"          paciente_id = patient_id,",
@@ -196,7 +199,7 @@
 				"          sexo = patient_sex,",
 				"          fecha_nacimiento = patient_birth_date,",
 				"          departamento = patient_department,",
-				"          {municipio_residencia } = patient_municipality,",
+				"          municipio_residencia = patient_municipality,",
 				"          comunidad_indigena = patient_indigenous,",
 				"          fecha_vacunacion = vaccination_date,",
 				"          vacuna_id = vaccine_code,",
@@ -210,17 +213,18 @@
 				"          via_administracion = administration_route",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> select2",
-				"select2 derive(ci_paciente = iif(isNull(ci_paciente), 'S/D', ci_paciente),",
+				"     skipDuplicateMapOutputs: true) ~> mapeoColumnasRural",
+				"mapeoColumnasRural derive(ci_paciente = iif(isNull(ci_paciente), 'S/D', ci_paciente),",
 				"          comunidad_indigena = toBoolean(comunidad_indigena),",
-				"          aplicacion_oportuna = true()) ~> derivedColumn5",
-				"derivedColumn2 derive(fecha_nacimiento = iifNull(toDate(fecha_nacimiento, 'dd/MM/yyyy'), toDate('2025-01-01', 'yyyy-MM-dd')),",
-				"          fecha_vacunacion = iifNull(toDate(fecha_vacunacion, 'dd/MM/yyyy'), toDate('2025-01-01', 'yyyy-MM-dd'))) ~> derivedColumn6",
-				"select1 derive(fecha_nacimiento = toDate(fecha_nacimiento, 'dd/MM/yyyy'),",
-				"          fecha_vacunacion = toDate(fecha_vacunacion, 'dd/MM/yyyy')) ~> derivedColumn7",
-				"derivedColumn5 derive(fecha_nacimiento = toDate(fecha_nacimiento, 'dd/MM/yyyy'),",
-				"          fecha_vacunacion = toDate(left(fecha_vacunacion, 10), 'yyyy-MM-dd')) ~> derivedColumn8",
-				"derivedColumn8 filter(!isNull(vacuna_id)) ~> filter1"
+				"          aplicacion_oportuna = true()) ~> booleanosRural",
+				"toBooleanstcr derive(fecha_nacimiento = iifNull(toDate(fecha_nacimiento, 'dd/MM/yyyy'), toDate('2025-01-01', 'yyyy-MM-dd')),",
+				"          fecha_vacunacion = iifNull(toDate(fecha_vacunacion, 'dd/MM/yyyy'), toDate('2025-01-01', 'yyyy-MM-dd'))) ~> fechasdtcr",
+				"mapeoColumnaslapaz derive(fecha_nacimiento = toDate(fecha_nacimiento, 'dd/MM/yyyy'),",
+				"          fecha_vacunacion = toDate(fecha_vacunacion, 'dd/MM/yyyy')) ~> fechasLapaz",
+				"booleanosRural derive(fecha_nacimiento = toDate(fecha_nacimiento, 'dd/MM/yyyy'),",
+				"          fecha_vacunacion = toDate(left(fecha_vacunacion, 10), 'yyyy-MM-dd')) ~> fechasRural",
+				"fechasRural filter(!isNull(vacuna_id)) ~> nulosvacuna",
+				"fechasLapaz derive(sexo = left(sexo, 1)) ~> estadarizacionlapaz"
 			]
 		}
 	}
