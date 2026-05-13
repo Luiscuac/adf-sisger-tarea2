@@ -18,7 +18,10 @@
 			"sinks": [],
 			"transformations": [
 				{
-					"name": "filter1"
+					"name": "FiltrarEstablecimientosActivos"
+				},
+				{
+					"name": "LimpiarCamposTexto"
 				}
 			],
 			"scriptLines": [
@@ -40,7 +43,12 @@
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false) ~> source1",
-				"source1 filter(ERROR_FUNCTION('')) ~> filter1"
+				"source1 filter(!isNull(establecimiento_id) && trim(establecimiento_id) != '') ~> FiltrarEstablecimientosActivos",
+				"FiltrarEstablecimientosActivos derive(nombre_establecimiento = upper(trim(nombre_establecimiento)),",
+				"          {tipo_establecimiento } = upper(trim(tipo_establecimiento)),",
+				"          red_salud = iif(isNull(red_salud) || trim(red_salud) == '', 'SIN RED ASIGNADA', upper(trim(red_salud))),",
+				"          municipio = trim(municipio),",
+				"          zona = upper(trim(zona))) ~> LimpiarCamposTexto"
 			]
 		}
 	}
