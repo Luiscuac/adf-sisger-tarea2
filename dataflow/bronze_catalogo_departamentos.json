@@ -41,7 +41,25 @@
 					"name": "derivedColumn3"
 				},
 				{
+					"name": "derivedColumn4"
+				},
+				{
 					"name": "select1"
+				},
+				{
+					"name": "select2"
+				},
+				{
+					"name": "derivedColumn5"
+				},
+				{
+					"name": "derivedColumn6"
+				},
+				{
+					"name": "derivedColumn7"
+				},
+				{
+					"name": "derivedColumn8"
 				}
 			],
 			"scriptLines": [
@@ -133,33 +151,72 @@
 				"     ignoreNoFilesFound: false) ~> source3",
 				"source1 derive(municipio_residencia = trim(municipio_residencia),",
 				"          departamento = trim(departamento)) ~> derivedColumn1",
-				"derivedColumn1 derive(departamento = iif(like(upper(departamento), '%CRUZ%'), 'Santa Cruz', departamento)) ~> derivedColumn2",
-				"source2 derive(depto = trim(depto)) ~> derivedColumn3",
-				"derivedColumn3 select(mapColumn(",
+				"derivedColumn1 derive(departamento = iif(like(upper(departamento), '%CRUZ%'), 'Santa Cruz', departamento),",
+				"          aplicacion_oportuna = toBoolean(aplicacion_oportuna),",
+				"          comunidad_indigena = toBoolean(comunidad_indigena)) ~> derivedColumn2",
+				"source2 derive(depto = trim(depto),",
+				"          aplicacion_oportuna = true()) ~> derivedColumn3",
+				"derivedColumn3 derive(pueblo_indigena = iif(lower(trim(pueblo_indigena)) == 'no', false(), true())) ~> derivedColumn4",
+				"derivedColumn4 select(mapColumn(",
 				"          registro_id = id_registro,",
 				"          paciente_id = cod_paciente,",
 				"          ci_paciente = documento_identidad,",
 				"          nombre_paciente = nombres,",
 				"          apellido_paterno = primer_apellido,",
-				"          segundo_apellido,",
+				"          apellido_materno = segundo_apellido,",
 				"          sexo = genero,",
-				"          fec_nacimiento,",
-				"          municipio,",
-				"          pueblo_indigena,",
+				"          fecha_nacimiento = fec_nacimiento,",
+				"          municipio_residencia = municipio,",
+				"          comunidad_indigena = pueblo_indigena,",
 				"          fecha_vacunacion = fec_vacunacion,",
-				"          cod_vacuna,",
-				"          desc_vacuna,",
-				"          nro_dosis,",
-				"          cod_establecimiento,",
-				"          desc_establecimiento,",
+				"          vacuna_id = cod_vacuna,",
+				"          vacuna_nombre = desc_vacuna,",
+				"          numero_dosis = nro_dosis,",
+				"          establecimiento_id = cod_establecimiento,",
+				"          nombre_establecimiento = desc_establecimiento,",
 				"          departamento = depto,",
-				"          nro_lote,",
-				"          temp_conservacion,",
-				"          edad_dias,",
-				"          via_aplicacion",
+				"          lote_vacuna = nro_lote,",
+				"          temperatura_conservacion = temp_conservacion,",
+				"          edad_dias_aplicacion = edad_dias,",
+				"          via_administracion = via_aplicacion,",
+				"          aplicacion_oportuna",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> select1"
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"source3 select(mapColumn(",
+				"          registro_id = record_id,",
+				"          paciente_id = patient_id,",
+				"          ci_paciente = patient_ci,",
+				"          nombre_paciente = patient_name,",
+				"          apellido_paterno = patient_last_name_1,",
+				"          apellido_materno = patient_last_name_2,",
+				"          sexo = patient_sex,",
+				"          fecha_nacimiento = patient_birth_date,",
+				"          departamento = patient_department,",
+				"          {municipio_residencia } = patient_municipality,",
+				"          comunidad_indigena = patient_indigenous,",
+				"          fecha_vacunacion = vaccination_date,",
+				"          vacuna_id = vaccine_code,",
+				"          vacuna_nombre = vaccine_name,",
+				"          numero_dosis = dose_number,",
+				"          establecimiento_id = facility_code,",
+				"          nombre_establecimiento = facility_name,",
+				"          lote_vacuna = lot_number,",
+				"          temperatura_conservacion = storage_temp_celsius,",
+				"          edad_dias_aplicacion = patient_age_days,",
+				"          via_administracion = administration_route",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select2",
+				"select2 derive(ci_paciente = iif(isNull(ci_paciente), 'S/D', ci_paciente),",
+				"          comunidad_indigena = toBoolean(comunidad_indigena),",
+				"          aplicacion_oportuna = true()) ~> derivedColumn5",
+				"derivedColumn2 derive(fecha_nacimiento = iifNull(toDate(fecha_nacimiento, 'dd/MM/yyyy'), toDate('2025-01-01', 'yyyy-MM-dd')),",
+				"          fecha_vacunacion = iifNull(toDate(fecha_vacunacion, 'dd/MM/yyyy'), toDate('2025-01-01', 'yyyy-MM-dd'))) ~> derivedColumn6",
+				"select1 derive(fecha_nacimiento = toDate(fecha_nacimiento, 'dd/MM/yyyy'),",
+				"          fecha_vacunacion = toDate(fecha_vacunacion, 'dd/MM/yyyy')) ~> derivedColumn7",
+				"derivedColumn5 derive(fecha_nacimiento = toDate(fecha_nacimiento, 'dd/MM/yyyy'),",
+				"          fecha_vacunacion = toDate(left(fecha_vacunacion, 10), 'yyyy-MM-dd')) ~> derivedColumn8"
 			]
 		}
 	}
