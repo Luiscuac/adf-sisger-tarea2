@@ -58,7 +58,6 @@
 				"     skipDuplicateMapOutputs: true,",
 				"     errorHandlingOption: 'stopOnFirstError',",
 				"     mapColumn(",
-				"          establecimiento_key,",
 				"          establecimiento_id,",
 				"          nombre_establecimiento,",
 				"          departamento,",
