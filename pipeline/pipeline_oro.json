@@ -1,5 +1,5 @@
 {
-	"name": "pipeline_temporal",
+	"name": "pipeline_oro",
 	"properties": {
 		"activities": [
 			{
@@ -110,6 +110,37 @@
 				"typeProperties": {
 					"dataflow": {
 						"referenceName": "df_gold_dim_paciente",
+						"type": "DataFlowReference"
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			},
+			{
+				"name": "hechos",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [
+					{
+						"activity": "estab",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "gold_dim_hechos_vacunacion",
 						"type": "DataFlowReference"
 					},
 					"compute": {
