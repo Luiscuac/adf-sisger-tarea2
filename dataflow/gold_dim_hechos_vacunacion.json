@@ -6,11 +6,220 @@
 		},
 		"type": "MappingDataFlow",
 		"typeProperties": {
-			"sources": [],
-			"sinks": [],
-			"transformations": [],
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "silver_vacunaciones_consolidadas",
+						"type": "DatasetReference"
+					},
+					"name": "vacunasconsolidadas"
+				},
+				{
+					"dataset": {
+						"referenceName": "gold_dim_tiempo",
+						"type": "DatasetReference"
+					},
+					"name": "dimtiempo"
+				},
+				{
+					"dataset": {
+						"referenceName": "gold_dim_paciente",
+						"type": "DatasetReference"
+					},
+					"name": "dimpaciente"
+				},
+				{
+					"dataset": {
+						"referenceName": "gold_dim_establecimiento",
+						"type": "DatasetReference"
+					},
+					"name": "dimestablecimiento"
+				},
+				{
+					"dataset": {
+						"referenceName": "gold_dim_vacuna",
+						"type": "DatasetReference"
+					},
+					"name": "dimvacuna"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "gold_hechos_vacunacion",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "lookupTiempo"
+				},
+				{
+					"name": "lookuppaciente"
+				},
+				{
+					"name": "lookupVacuna"
+				},
+				{
+					"name": "lookupestablecimiento"
+				},
+				{
+					"name": "select1"
+				}
+			],
 			"scriptLines": [
-				""
+				"source(output(",
+				"          registro_id as string,",
+				"          paciente_id as string,",
+				"          ci_paciente as string,",
+				"          nombre_paciente as string,",
+				"          apellido_paterno as string,",
+				"          apellido_materno as string,",
+				"          sexo as string,",
+				"          fecha_nacimiento as date,",
+				"          municipio_residencia as string,",
+				"          comunidad_indigena as boolean,",
+				"          fecha_vacunacion as date,",
+				"          vacuna_id as string,",
+				"          vacuna_nombre as string,",
+				"          numero_dosis as integer,",
+				"          establecimiento_id as string,",
+				"          nombre_establecimiento as string,",
+				"          departamento as string,",
+				"          lote_vacuna as string,",
+				"          temperatura_conservacion as decimal(10,2),",
+				"          edad_dias_aplicacion as integer,",
+				"          aplicacion_oportuna as boolean,",
+				"          via_administracion as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> vacunasconsolidadas",
+				"source(output(",
+				"          fecha_key as integer,",
+				"          fecha as date,",
+				"          dia_semana as integer,",
+				"          nombre_dia as string,",
+				"          dia_mes as integer,",
+				"          mes as integer,",
+				"          nombre_mes as string,",
+				"          trimestre as integer,",
+				"          anio as integer,",
+				"          es_fin_semana as boolean",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> dimtiempo",
+				"source(output(",
+				"          paciente_key as integer,",
+				"          paciente_id as string,",
+				"          ci_paciente as string,",
+				"          nombre_completo as string,",
+				"          sexo as string,",
+				"          municipio_residencia as string,",
+				"          comunidad_indigena as boolean,",
+				"          fecha_nacimiento as date",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> dimpaciente",
+				"source(output(",
+				"          establecimiento_key as integer,",
+				"          establecimiento_id as string,",
+				"          nombre_establecimiento as string,",
+				"          departamento as string,",
+				"          tipo_establecimiento as string,",
+				"          red_salud as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> dimestablecimiento",
+				"source(output(",
+				"          vacuna_key as integer,",
+				"          vacuna_id as string,",
+				"          vacuna_nombre as string,",
+				"          enfermedad_previene as string,",
+				"          grupo_pai as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> dimvacuna",
+				"vacunasconsolidadas, dimtiempo lookup(fecha_vacunacion == fecha,",
+				"     multiple: false,",
+				"     pickup: 'any',",
+				"     broadcast: 'auto')~> lookupTiempo",
+				"lookupTiempo, dimpaciente lookup(vacunasconsolidadas@paciente_id == dimpaciente@paciente_id,",
+				"     multiple: false,",
+				"     pickup: 'any',",
+				"     broadcast: 'auto')~> lookuppaciente",
+				"lookuppaciente, dimvacuna lookup(vacunasconsolidadas@vacuna_id == dimvacuna@vacuna_id,",
+				"     multiple: false,",
+				"     pickup: 'any',",
+				"     broadcast: 'auto')~> lookupVacuna",
+				"lookupVacuna, dimestablecimiento lookup(vacunasconsolidadas@establecimiento_id == dimestablecimiento@establecimiento_id,",
+				"     multiple: false,",
+				"     pickup: 'any',",
+				"     broadcast: 'auto')~> lookupestablecimiento",
+				"lookupestablecimiento select(mapColumn(",
+				"          registro_id,",
+				"          numero_dosis,",
+				"          lote_vacuna,",
+				"          temperatura_conservacion,",
+				"          edad_dias_aplicacion,",
+				"          aplicacion_oportuna,",
+				"          via_administracion,",
+				"          fecha_key,",
+				"          paciente_key,",
+				"          vacuna_key,",
+				"          establecimiento_key",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"select1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          vacunacion_key as integer,",
+				"          fecha_key as integer,",
+				"          paciente_key as integer,",
+				"          vacuna_key as integer,",
+				"          establecimiento_key as integer,",
+				"          cantidad_aplicada as integer,",
+				"          edad_dias_aplicacion as integer,",
+				"          temperatura_conservacion as decimal(10,2),",
+				"          aplicacion_oportuna as boolean,",
+				"          registro_id as string,",
+				"          numero_dosis as integer,",
+				"          lote_vacuna as string,",
+				"          via_administracion as string",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          fecha_key,",
+				"          paciente_key,",
+				"          vacuna_key,",
+				"          establecimiento_key,",
+				"          edad_dias_aplicacion,",
+				"          temperatura_conservacion,",
+				"          aplicacion_oportuna,",
+				"          registro_id,",
+				"          numero_dosis,",
+				"          lote_vacuna,",
+				"          via_administracion",
+				"     )) ~> sink1"
 			]
 		}
 	}
